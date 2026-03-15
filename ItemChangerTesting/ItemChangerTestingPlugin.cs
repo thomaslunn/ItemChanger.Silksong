@@ -1,7 +1,5 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
-using ItemChanger.Events;
-using ItemChanger.Silksong;
 using Silksong.ModMenu.Elements;
 using Silksong.ModMenu.Plugin;
 using Silksong.ModMenu.Screens;
@@ -28,24 +26,7 @@ namespace ItemChangerTesting
                 configDescription: new ConfigDescription("The test folder to search."));
             cfgTestIndex = Config.Bind(configDefinition: new ConfigDefinition(section: "Menu", key: "Test Index"), defaultValue: (int)default,
                 configDescription: new ConfigDescription("The index of the test to launch, within its folder."));
-
-            LogLifecycleEvents();
-            
         }
-
-        private void LogLifecycleEvents()
-        {
-            SilksongHost.Instance.LifecycleEvents.OnLeaveGame += () => Logger.LogInfo("Invoked " + nameof(LifecycleEvents.OnLeaveGame));
-            SilksongHost.Instance.LifecycleEvents.OnEnterGame += () => Logger.LogInfo("Invoked " + nameof(LifecycleEvents.OnEnterGame));
-            SilksongHost.Instance.LifecycleEvents.OnSafeToGiveItems += () => Logger.LogInfo("Invoked " + nameof(LifecycleEvents.OnSafeToGiveItems));
-            SilksongHost.Instance.LifecycleEvents.OnItemChangerHook += () => Logger.LogInfo("Invoked " + nameof(LifecycleEvents.OnItemChangerHook));
-            SilksongHost.Instance.LifecycleEvents.OnItemChangerUnhook += () => Logger.LogInfo("Invoked " + nameof(LifecycleEvents.OnItemChangerUnhook));
-            SilksongHost.Instance.LifecycleEvents.BeforeStartNewGame += () => Logger.LogInfo("Invoked " + nameof(LifecycleEvents.BeforeStartNewGame));
-            SilksongHost.Instance.LifecycleEvents.BeforeContinueGame += () => Logger.LogInfo("Invoked " + nameof(LifecycleEvents.BeforeContinueGame));
-            SilksongHost.Instance.LifecycleEvents.AfterStartNewGame += () => Logger.LogInfo("Invoked " + nameof(LifecycleEvents.AfterStartNewGame));
-            SilksongHost.Instance.LifecycleEvents.AfterContinueGame += () => Logger.LogInfo("Invoked " + nameof(LifecycleEvents.AfterContinueGame));
-        }
-
 
         public AbstractMenuScreen BuildCustomMenu()
         {
