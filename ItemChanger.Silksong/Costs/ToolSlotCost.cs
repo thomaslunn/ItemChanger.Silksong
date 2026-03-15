@@ -20,7 +20,6 @@ public class ToolSlotCost : Cost
         int n = 0;
         foreach (ToolCrest crest in ToolItemManager.Instance.crestList)
         {
-            int m = 0;
             if (crest.IsUnlocked && !crest.IsHidden && !crest.IsUpgradedVersionUnlocked)
             {
                 foreach (ToolCrest.SlotInfo slot in crest.Slots)
@@ -30,10 +29,8 @@ public class ToolSlotCost : Cost
                     if (!slot.IsLocked)
                     {
                         n++;
-                        m++;
                     }
                 }
-                Logger.LogInfo($"crest {crest.name} has {m} slots unlocked");
             }
         }
         return n;

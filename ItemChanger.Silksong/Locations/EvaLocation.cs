@@ -50,13 +50,13 @@ public class EvaLocation : AutoLocation
     private void SpawnTablet(Scene scene)
     {
         string inspectRegionName = "Inspect Region (1)";
-        var tabletPrefab = AssetCache.GetAsset<IList<GameObject>>(GameObjectListKeys.LORE_TABLET_WEAVER)
+        GameObject tabletPrefab = AssetCache.GetAsset<IList<GameObject>>(GameObjectListKeys.LORE_TABLET_WEAVER)
             .First(obj => obj.FindChild(inspectRegionName) != null);
-        var tablet = GameObject.Instantiate(tabletPrefab);
+        GameObject tablet = GameObject.Instantiate(tabletPrefab);
         tablet.transform.position = new Vector3(70.94f, 10.57f, tablet.transform.position.z);
-        var modKey = "EVA_ITEM_DESCRIPTION";
+        string modKey = "EVA_ITEM_DESCRIPTION";
         LocalisedString s = new(Localization.Sheet, modKey);
-        var npc = tablet.FindChild(inspectRegionName)!.GetComponent<BasicNPC>();
+        BasicNPC npc = tablet.FindChild(inspectRegionName)!.GetComponent<BasicNPC>();
         npc.StartingDialogue += () =>
         {
             Language._currentEntrySheets[Localization.Sheet][modKey] = BuildDescription();
@@ -69,7 +69,7 @@ public class EvaLocation : AutoLocation
 
     private void HookEva(PlayMakerFSM fsm)
     {
-        var placement = (EvaPlacement)Placement!;
+        EvaPlacement placement = (EvaPlacement)Placement!;
 
         void ReplaceBrokenCheck(string stateName)
         {
@@ -136,13 +136,13 @@ public class EvaLocation : AutoLocation
     private void GivePayableItems()
     {
         List<Item> givenItems = [];
-        foreach (var item in Placement!.Items)
+        foreach (Item item in Placement!.Items)
         {
             if (item.IsObtained())
             {
                 continue;
             }
-            if (item.GetTag<CostTag>(out var c) && !c.Cost.Paid)
+            if (item.GetTag<CostTag>(out CostTag c) && !c.Cost.Paid)
             {
                 if (c.Cost.CanPay())
                 {
@@ -161,7 +161,7 @@ public class EvaLocation : AutoLocation
     private string BuildDescription()
     {
         StringBuilder sb = new();
-        foreach (var item in Placement!.Items)
+        foreach (Item item in Placement!.Items)
         {
             sb.Append(item.GetPreviewName(Placement));
             sb.Append(" - ");
