@@ -9,23 +9,16 @@ namespace ItemChanger.Silksong.Locations;
 
 public class CrestCorpseLocation : AutoLocation
 {
-    [JsonIgnore]
-    private FsmEditGroup? fsmEdits;
-
     protected override void DoLoad()
     {
-        fsmEdits = new()
+        Using(new FsmEditGroup()
         {
             {new(SceneName!, "Crest Get Shrine", "Control"), HookCorpse},
             {new(SceneName!, "Music Control", "Control"), HookMusic},
-        };
+        });
     }
 
-    protected override void DoUnload()
-    {
-        fsmEdits!.Dispose();
-        fsmEdits = null;
-    }
+    protected override void DoUnload() { }
 
     private void HookCorpse(PlayMakerFSM fsm)
     {

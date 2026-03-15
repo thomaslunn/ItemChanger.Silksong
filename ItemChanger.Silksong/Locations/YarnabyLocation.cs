@@ -8,22 +8,15 @@ namespace ItemChanger.Silksong.Locations;
 
 public class YarnabyLocation : AutoLocation
 {
-    [JsonIgnore]
-    private FsmEditGroup? fsmEdits; 
-
     protected override void DoLoad()
     {
-        fsmEdits = new()
+        Using(new FsmEditGroup()
         {
             {new(SceneName!, "Doctor Fly", "Dialogue"), HookYarnaby},
-        };
+        });
     }
 
-    protected override void DoUnload()
-    {
-        fsmEdits!.Dispose();
-        fsmEdits = null;
-    }
+    protected override void DoUnload() { }
 
     private void HookYarnaby(PlayMakerFSM fsm)
     {
