@@ -14,6 +14,8 @@ public class EvaPlacement(string Name) : Placement(Name), IMultiCostPlacement, I
 
     /// <summary>
     /// The set of items that should be handled by the vanilla Eva dialogue.
+    /// Those items will have their vanilla tool slot costs, which unlike ToolSlotCost
+    /// do not count slots unlocked on the Hunter Crest.
     /// </summary>
     public DefaultEvaItems DefaultItems { get; set; } = 0;
 
