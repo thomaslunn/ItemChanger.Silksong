@@ -5,20 +5,75 @@ using ItemChanger.Enums;
 using ItemChanger.Items;
 using ItemChanger.Silksong.Assets;
 using ItemChanger.Silksong.Extensions;
+using ItemChanger.Silksong.Tags;
 using Silksong.FsmUtil;
+using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
 namespace ItemChanger.Silksong.Containers;
 
 public class ChestContainer : Container
 {
-    // TODO: create enum of chest types. Use in ChestPrefabData and possibly split fsm edit depending on chest type if needed.
-
     public enum ChestType
     {
-        Halls,
+        /// <summary>
+        /// Chest used in High Halls and Choral Chambers.
+        /// </summary>
+        Citadel,
+        /// <summary>
+        /// Chest used in Moss Grotto.
+        /// </summary>
         Bone,
+        /// <summary>
+        /// Chest used in Far Fields.
+        /// </summary>
+        Ant,
+        /// <summary>
+        /// Chest used in Deep Docks and The Slab.
+        /// </summary>
+        Docks,
+        /// <summary>
+        /// Chest used in Sinner's Road.
+        /// </summary>
+        Pilgrim,
+    }
 
+    private static readonly Dictionary<ChestType, string> _prefabKeys = new()
+    {
+        [ChestType.Citadel] = GameObjectKeys.CHEST_CITADEL,
+        [ChestType.Bone] = GameObjectKeys.CHEST_BONE,
+        [ChestType.Ant] = GameObjectKeys.CHEST_ANT,
+        [ChestType.Docks] = GameObjectKeys.CHEST_DOCKS,
+        [ChestType.Pilgrim] = GameObjectKeys.CHEST_PILGRIM,
+    };
+
+
+    public record ChestControlInfo
+    {
+        public static ChestControlInfo Default { get; } = new();
+
+        public ChestType ChestType { get; init; } = ChestType.Citadel;
+    }
+
+    /// <summary>
+    /// A ContainerInfo which contains additional chest-specific configuration info. Takes precedence over configuration provided through ChestControlTag (TODO).
+    /// </summary>
+    public class ChestContainerInfo : ContainerInfo
+    {
+        public required ChestControlInfo ChestInfo { get; init; }
+
+        public ChestContainerInfo() { }
+
+        [SetsRequiredMembers]
+        public ChestContainerInfo(ContainerInfo containerInfo, ChestControlInfo chestInfo)
+        {
+            base.CostInfo = containerInfo.CostInfo;
+            base.ContainingScene = containerInfo.ContainingScene;
+            base.ContainerType = containerInfo.ContainerType;
+            base.GiveInfo = containerInfo.GiveInfo;
+            base.RequestedCapabilities = containerInfo.RequestedCapabilities;
+            this.ChestInfo = chestInfo;
+        }
     }
 
     public static ChestContainer Instance { get; } = new();
@@ -33,7 +88,7 @@ public class ChestContainer : Container
 
     public override GameObject GetNewContainer(ContainerInfo info)
     {
-        GameObject chest = GameObjectKeys.HALLS_CHEST.InstantiateAsset(info.ContainingScene);
+        GameObject chest = CreateChest(info);
         chest.name = info.GetGameObjectName("IC Chest");
         ModifyContainerInPlace(chest, info);
         return chest;
@@ -52,6 +107,27 @@ public class ChestContainer : Container
 
     protected override void DoUnload()
     {
+    }
+
+    private static ChestControlInfo GetChestInfo(ContainerInfo info)
+    {
+        return (info as ChestContainerInfo)?.ChestInfo
+            ?? info.GiveInfo.Placement.GetPlacementAndLocationTags().OfType<ChestControlTag>().FirstOrDefault()?.ChestInfo
+            ?? ChestControlInfo.Default;
+    }
+
+    private static ChestType GetChestType(ContainerInfo info) => GetChestInfo(info).ChestType;
+
+    private static GameObject CreateChest(ContainerInfo info)
+    {
+        ChestType type = GetChestType(info);
+        if (!_prefabKeys.TryGetValue(type, out string key)) 
+        {
+            KeyValuePair<ChestType, string> kvp = _prefabKeys.First();
+            key = kvp.Value;
+            LogWarn($"Requested chest type {type} for placement {info.GiveInfo.Placement.Name} is not available! Falling back to type {kvp.Key}.");
+        }
+        return key.InstantiateAsset(info.ContainingScene);
     }
 
     private static void RemoveExistingItems(GameObject chest)

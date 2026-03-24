@@ -1,48 +1,38 @@
 {
-    "FLEA_BARREL": {
-        "SceneName": "Bone_East_05",
-        "ObjPath": "Flea Rescue Barrel"
-    },
-    "FLEA_SLEEPING": {
-        "SceneName": "Dust_12",
-        "ObjPath": "Flea Rescue Sleeping"
-    },
-    "FLEA_ANT_CAGE": {
-        "SceneName": "Ant_03",
-        "ObjPath": "Flea Rescue Cage"
-    },
-    "FLEA_CITADEL_CAGE": {
-        "SceneName": "Library_01",
-        "ObjPath": "Flea Rescue CitadelCage"
-    },
-    "HALLS_CHEST": {
-        "SceneName": "Hang_06_bank",
-        "ObjPath": "Thief Scene Control/Thieves Not Here/Chest"
-    }
-/*
-    "HALLS_CHEST_1": {
-        "SceneName": "Hang_06_bank",
-        "ObjPath": "Thief Scene Control/Thieves Not Here/Chest (1)"
-    },
-    "HALLS_CHEST_2": {
-        "SceneName": "Hang_06_bank",
-        "ObjPath": "Thief Scene Control/Thieves Not Here/Chest (2)"
-    },
-    "HALLS_THIEVES_CHEST": {
-        "SceneName": "Hang_06_bank",
-        "ObjPath": "Thief Scene Control/Thieves Here/Chest"
-    },
-    "HALLS_THIEVES_CHEST_1": {
-        "SceneName": "Hang_06_bank",
-        "ObjPath": "Thief Scene Control/Thieves Here/Chest (1)"
-    },
-    "HALLS_THIEVES_CHEST_2": {
-        "SceneName": "Hang_06_bank",
-        "ObjPath": "Thief Scene Control/Thieves Here/Chest (2)"
-    },
-    "MOSS_BONE_CHEST": {
-        "SceneName": "Tut_01",
-        "ObjPath": "Bone Chest"
-    }
-    */
+  "FLEA_BARREL": {
+    "SceneName": "Bone_East_05",
+    "ObjPath": "Flea Rescue Barrel"
+  },
+  "FLEA_SLEEPING": {
+    "SceneName": "Dust_12",
+    "ObjPath": "Flea Rescue Sleeping"
+  },
+  "FLEA_ANT_CAGE": {
+    "SceneName": "Ant_03",
+    "ObjPath": "Flea Rescue Cage"
+  },
+  "FLEA_CITADEL_CAGE": {
+    "SceneName": "Library_01",
+    "ObjPath": "Flea Rescue CitadelCage"
+  },
+  "CHEST_CITADEL": {
+    "SceneName": "Hang_06_bank",
+    "ObjPath": "Thief Scene Control/Thieves Not Here/Chest"
+  },
+  "CHEST_BONE": {
+    "SceneName": "Tut_01",
+    "ObjPath": "Bone Chest"
+  },
+  "CHEST_ANT": {
+    "SceneName": "Bone_East_17",
+    "ObjPath": "Ant Chest"
+  },
+  "CHEST_DOCKS": {
+    "SceneName": "Slab_19b",
+    "ObjPath": "City Shard Chest"
+  },
+  "CHEST_PILGRIM": {
+    "SceneName": "Dust_05",
+    "ObjPath": "Pilgrim Chest"
+  }
 }
