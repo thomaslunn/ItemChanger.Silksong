@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using ItemChanger.Extensions;
+using UnityEngine;
 
 namespace ItemChanger.Silksong.Assets;
 
@@ -27,7 +28,7 @@ public static class AssetCache
         _objectCacheLookup[typeof(GameObject)] = new GameObjectCache();
     }
 
-    public static T GetAsset<T>(this string key)
+    private static IObjectCache<T> GetObjectCache<T>()
     {
         if (!_objectCacheLookup.TryGetValue(typeof(T), out IObjectCache untypedCache))
         {
@@ -39,8 +40,29 @@ public static class AssetCache
         {
             throw new InvalidOperationException($"Could not cast object cache for type {typeof(T).Name}");
         }
+        return typedCache;
+    }
 
-        return typedCache.GetAsset(key);
+    /// <summary>
+    /// Retrieves a non-GameObject asset by key. Asset keys can be found in the various static classes in the AssetNames file.
+    /// <br/>Use <see cref="InstantiateAsset(string, UnityEngine.SceneManagement.Scene)"/> instead to retrieve GameObject assets.
+    /// </summary>
+    /// <exception cref="NotSupportedException"></exception>
+    public static T GetAsset<T>(this string key)
+    {
+        if (typeof(T) == typeof(GameObject))
+        {
+            throw new NotSupportedException($"GetAsset called for GameObject with key {key}. GameObject assets can only be accessed with {nameof(InstantiateAsset)}.");
+        }
+
+        return GetObjectCache<T>().GetAsset(key);
+    }
+    /// <summary>
+    /// Retrieves a GameObject asset by key, and instantiates it in the provided scene.
+    /// </summary>
+    public static GameObject InstantiateAsset(this string key, UnityEngine.SceneManagement.Scene scene)
+    {
+        return scene.Instantiate(GetObjectCache<GameObject>().GetAsset(key));
     }
 
 

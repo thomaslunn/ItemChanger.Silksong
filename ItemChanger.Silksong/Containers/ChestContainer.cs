@@ -1,9 +1,7 @@
-using Benchwarp.Data;
 using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
 using ItemChanger.Containers;
 using ItemChanger.Enums;
-using ItemChanger.Extensions;
 using ItemChanger.Items;
 using ItemChanger.Silksong.Assets;
 using ItemChanger.Silksong.Extensions;
@@ -15,6 +13,13 @@ namespace ItemChanger.Silksong.Containers;
 public class ChestContainer : Container
 {
     // TODO: create enum of chest types. Use in ChestPrefabData and possibly split fsm edit depending on chest type if needed.
+
+    public enum ChestType
+    {
+        Halls,
+        Bone,
+
+    }
 
     public static ChestContainer Instance { get; } = new();
 
@@ -28,7 +33,7 @@ public class ChestContainer : Container
 
     public override GameObject GetNewContainer(ContainerInfo info)
     {
-        GameObject chest = info.ContainingScene.Instantiate(GameObjectKeys.HALLS_CHEST.GetAsset<GameObject>());
+        GameObject chest = GameObjectKeys.HALLS_CHEST.InstantiateAsset(info.ContainingScene);
         chest.name = info.GetGameObjectName("IC Chest");
         ModifyContainerInPlace(chest, info);
         return chest;

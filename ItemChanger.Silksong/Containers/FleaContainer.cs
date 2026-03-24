@@ -6,6 +6,7 @@ using ItemChanger.Items;
 using ItemChanger.Placements;
 using ItemChanger.Silksong.Assets;
 using ItemChanger.Silksong.Components;
+using ItemChanger.Silksong.Extensions;
 using ItemChanger.Silksong.FsmStateActions;
 using ItemChanger.Silksong.Modules;
 using ItemChanger.Silksong.Tags;
@@ -135,10 +136,10 @@ public class FleaContainer : Container
         FleaContainerType fleaType = SelectContainerType(info);
         FleaPrefabData data = _prefabs[fleaType];
 
-        GameObject spawnedFlea = info.ContainingScene.Instantiate(data.PrefabKey.GetAsset<GameObject>());
+        GameObject spawnedFlea = data.PrefabKey.InstantiateAsset(info.ContainingScene);
         ModifyFlea(spawnedFlea, info, fleaType);
 
-        spawnedFlea.name = $"ItemChanger Flea for {info.GiveInfo.Placement.Name}";
+        spawnedFlea.name = info.GetGameObjectName("IC Flea");
         // We must apply the local offset after finishing the modifications
         return spawnedFlea.WithLocalOffset(new(0, data.Offset, 0));
     }
