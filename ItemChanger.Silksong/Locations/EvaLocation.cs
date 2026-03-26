@@ -25,22 +25,17 @@ public class EvaLocation : AutoLocation
 {
     public override bool SupportsCost => true;
 
-    [JsonIgnore]
-    private FsmEditGroup? fsmEdits;
-
     protected override void DoLoad()
     {
-        fsmEdits = new()
+        Using(new FsmEditGroup()
         {
             {new(SceneName!, "Crest Upgrade Shrine", "Dialogue"), HookEva},
-        };
+        });
         GameEvents.AddSceneEdit(SceneName!, SpawnTablet);
     }
 
     protected override void DoUnload()
     {
-        fsmEdits!.Dispose();
-        fsmEdits = null;
         GameEvents.RemoveSceneEdit(SceneName!, SpawnTablet);
     }
 
