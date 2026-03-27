@@ -1,7 +1,7 @@
 ﻿using ItemChanger.Serialization;
 using UnityEngine;
 
-namespace ItemChanger.Silksong.UIDefs;
+namespace ItemChanger.Silksong.UIDefs.BigUIDefs;
 
 /*
  * Note - see the "UI Msg Get Item" fsm in prompts_assets_all.bundle for parameters.

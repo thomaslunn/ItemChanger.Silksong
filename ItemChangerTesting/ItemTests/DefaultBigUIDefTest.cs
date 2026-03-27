@@ -10,6 +10,7 @@ using ItemChanger.Silksong.Serialization;
 using ItemChanger.Silksong.Serialization.ModifiedSprites;
 using ItemChanger.Silksong.StartDefs;
 using ItemChanger.Silksong.UIDefs;
+using ItemChanger.Silksong.UIDefs.BigUIDefs;
 using ItemChanger.Tags;
 using UnityEngine;
 
@@ -140,7 +141,7 @@ internal class DefaultBigUIDefTest : Test
         Placement upper,
         Placement damage)
     {
-        UIDef big = new DefaultBigUIDef()
+        UIDef big = new CustomDefaultBigUIDef()
         {
             Fallback = new MsgUIDef()
             {
@@ -168,7 +169,7 @@ internal class DefaultBigUIDefTest : Test
             }
         };
 
-        UIDef big2 = new DefaultBigUIDef()
+        UIDef big2 = new CustomDefaultBigUIDef()
         {
             Fallback = new MsgUIDef()
             {
@@ -191,26 +192,61 @@ internal class DefaultBigUIDefTest : Test
             }
         };
 
-        UIDef defaultDash = new DefaultBigUIDef()
+        UIDef dashFallback = new MsgUIDef()
         {
-            Fallback = new MsgUIDef()
-            {
-                Name = BaseLanguageStrings.Swift_Step_Name,
-                ShopDesc = BaseLanguageStrings.Swift_Step_Desc,
-                Sprite = BaseAtlasSprites.Swift_Step,
-            },
-            ItemStringVariable = "Sprint",
-            Sprite = BaseAtlasSprites.Swift_Step_Big,
+            Name = BaseLanguageStrings.Swift_Step_Name,
+            ShopDesc = BaseLanguageStrings.Swift_Step_Desc,
+            Sprite = BaseAtlasSprites.Swift_Step,
         };
 
-        UIDef defaultDashNonDefault = new DefaultBigUIDef()
+        UIDef defaultDash = new MutatedDefaultBigUIDef()
+        {
+            Fallback = dashFallback,
+            BaseStateName = "Set Sprint",
+            Sprite = BaseAtlasSprites.Swift_Step_Big
+        };
+
+        IValueProvider<string> PrefixString(string prefix, IValueProvider<string> orig) => CompositeString.Create(
+            pattern: new BoxedString($"{prefix}{{orig}}"),
+            argLookup: new()
+            {
+                ["orig"] = orig
+            });
+
+        UIDef flippedDash = new MutatedDefaultBigUIDef()
         {
             Fallback = new MsgUIDef()
             {
-                Name = BaseLanguageStrings.Swift_Step_Name,
-                ShopDesc = BaseLanguageStrings.Swift_Step_Desc,
-                Sprite = BaseAtlasSprites.Swift_Step,
+                Name = PrefixString("Flipped ", BaseLanguageStrings.Swift_Step_Name),
+                ShopDesc = PrefixString("Flipped ", BaseLanguageStrings.Swift_Step_Desc),
+                Sprite = BaseAtlasSprites.Swift_Step.FlipX(),
             },
+            BaseStateName = "Set Sprint",
+            Sprite = BaseAtlasSprites.Swift_Step_Big.FlipX(),
+            Replacements = [
+                (new("UI", "INV_NAME_SKILL_SPRINT"), PrefixString("Flipped ", BaseLanguageStrings.Swift_Step_Name)), // The two language strings are the same
+                (new("Prompts", "GET_SPRINT_1"), PrefixString("Flippedly ", new LanguageString("Prompts", "GET_SPRINT_1"))),
+                ]
+        };
+
+        UIDef usdDash = new MutatedDefaultBigUIDef()
+        {
+            Fallback = new MsgUIDef()
+            {
+                Name = PrefixString("Upside Down ", BaseLanguageStrings.Swift_Step_Name),
+                ShopDesc = BaseLanguageStrings.Swift_Step_Desc,
+                Sprite = BaseAtlasSprites.Swift_Step.FlipY(),
+            },
+            BaseStateName = "Set Sprint",
+            Sprite = BaseAtlasSprites.Swift_Step_Big.FlipY(),
+            Replacements = [
+                (new("UI", "INV_NAME_SKILL_SPRINT"), PrefixString("Upside Down ", BaseLanguageStrings.Swift_Step_Name)),
+                ]
+        };
+
+        UIDef defaultDashNonDefault = new CustomDefaultBigUIDef()
+        {
+            Fallback = dashFallback,
             Sprite = BaseAtlasSprites.Swift_Step_Big,
             Data = new()
             {
@@ -253,8 +289,10 @@ internal class DefaultBigUIDefTest : Test
         AddUIDef(damage, small);
         AddUIDef(damage, big2);
 
-        // Test the default UI def (this not actually used for dash in-game)
-        AddUIDef(upper, defaultDash);
+        // Test mutated UIDef
         AddUIDef(upper, defaultDashNonDefault);
+        AddUIDef(upper, defaultDash);
+        AddUIDef(upper, flippedDash);
+        AddUIDef(upper, usdDash);
     }
 }
