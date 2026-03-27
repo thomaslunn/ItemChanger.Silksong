@@ -3,7 +3,6 @@ using ItemChanger.Modules;
 using ItemChanger.Silksong.Modules;
 using ItemChanger.Silksong.StartDefs;
 using System.Collections.ObjectModel;
-using UnityEngine;
 
 namespace ItemChangerTesting
 {

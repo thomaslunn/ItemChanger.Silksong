@@ -12,7 +12,7 @@ namespace ItemChanger.Silksong.Containers
     public class SavedContainerItem : SavedItem
     {
         public required ContainerInfo ContainerInfo { get; set; }
-        public MessageType SupportedMessageTypes { get; set; } = MessageType.Any;
+        public MessageType SupportedMessageTypes { get; set; } = MessageType.SmallPopup;
         public required Transform ContainerTransform { get; set; }
         public Action? Callback { get; set; } = null;
 
