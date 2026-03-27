@@ -1,9 +1,13 @@
 ﻿using HutongGames.PlayMaker;
 using HutongGames.PlayMaker.Actions;
+using ItemChanger.Extensions;
 using ItemChanger.Serialization;
 using ItemChanger.Silksong.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.UnityConverters.Math;
 using Silksong.FsmUtil;
 using Silksong.FsmUtil.Actions;
+using UnityEngine;
 
 namespace ItemChanger.Silksong.UIDefs.BigUIDefs;
 
@@ -17,10 +21,21 @@ internal class MutatedDefaultBigUIDef : DefaultBigUIDefBase
     /// </summary>
     public required string BaseStateName { get; init; }
 
+    [JsonConverter(typeof(Vector2Converter))]
+    public Vector2 SpriteOffset { get; init; } = Vector2.zero;
+
     public List<(LanguageString orig, IValueProvider<string> replacement)> Replacements { get; init; } = [];
 
     protected override void ApplyCustomModifications(PlayMakerFSM fsm)
     {
+        if (SpriteOffset != Vector2.zero)
+        {
+            GameObject icon = fsm.gameObject.FindChild("Icon")!;
+            float x = icon.transform.GetPositionX();
+            float y = icon.transform.GetPositionY();
+            icon.transform.SetPosition2D(x + SpriteOffset.x, y + SpriteOffset.y);
+        }
+
         string newStateName = "Mutated " + BaseStateName;
         FsmState newState = fsm.CopyState(BaseStateName, newStateName);
 

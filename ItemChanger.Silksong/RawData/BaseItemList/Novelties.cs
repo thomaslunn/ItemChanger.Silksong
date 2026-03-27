@@ -5,6 +5,7 @@ using ItemChanger.Silksong.Serialization;
 using ItemChanger.Silksong.Serialization.ModifiedSprites;
 using ItemChanger.Silksong.UIDefs;
 using ItemChanger.Silksong.UIDefs.BigUIDefs;
+using UnityEngine;
 
 namespace ItemChanger.Silksong.RawData;
 
@@ -33,7 +34,9 @@ internal partial class BaseItemList
             Sprite = BaseAtlasSprites.Cling_Grip_Big.Project(),
             Replacements = [
                 (new LanguageString("UI", "INV_NAME_WALLJUMP"), ItemChangerLanguageStrings.INV_NAME_WALLJUMP_LEFT)
-                ]
+                ],
+            // Not sure why this is needed...
+            SpriteOffset = new Vector2(-1, 0)
         }
     };
     public static Item Right_Cling_Grip => new CustomSkillItem

@@ -13,6 +13,7 @@ using ItemChanger.Silksong.UIDefs;
 using ItemChanger.Silksong.UIDefs.BigUIDefs;
 using ItemChanger.Tags;
 using UnityEngine;
+using static Mono.Security.X509.X520;
 
 namespace ItemChangerTesting.ItemTests;
 
@@ -23,7 +24,7 @@ internal class DefaultBigUIDefTest : Test
         Folder = TestFolder.ItemTests,
         MenuName = "Default Big UIDef",
         MenuDescription = "Tests the default big UI def",
-        Revision = 2026032400,
+        Revision = 2026032700,
     };
 
     public override void Setup(TestArgs args)
@@ -144,6 +145,31 @@ internal class DefaultBigUIDefTest : Test
         }
 
         Profile.AddPlacement(finderPlacement);
+
+        // Placement for whatever I'm working on right now
+        Placement tempPlacement = upper = new CoordinateLocation()
+        {
+            Name = "TempPlacement",
+            SceneName = SceneNames.Coral_34,
+            Y = 42.52f,
+            X = 105.49f,
+            FlingType = ItemChanger.Enums.FlingType.Everywhere,
+            ForceDefaultContainer = true,
+            Managed = false,
+        }.Wrap();
+
+        foreach (string itemName in (string[])[ItemNames.Cling_Grip, ItemNames.Left_Cling_Grip, ItemNames.Right_Cling_Grip])
+        {
+            tempPlacement.Add(new DebugItem()
+            {
+                Name = $"DEBUG: {itemName}",
+                UIDef = Finder.GetItem(itemName)!.UIDef,
+                Tags = [new PersistentItemTag() { Persistence = ItemChanger.Enums.Persistence.Persistent }]
+            });
+
+        }
+
+        Profile.AddPlacement(tempPlacement);
     }
 
     private void AddUIDef(Placement pmt, UIDef def)
