@@ -37,10 +37,19 @@ public class ItemChangerSavedItem : Item
     /// <param name="id">The UObject name of the SavedItem.</param>
     /// <param name="type">The type of SavedItem.</param>
     /// <param name="playerDataBoolName">A supplementary PlayerData bool, used by some items.</param>
-    public static ItemChangerSavedItem Create(string name, string id, BaseGameSavedItem.ItemType type, string? playerDataBoolName = null)
+    /// <param name="customUIDef">Function used to generate the UIDef. The default UIDef will
+    /// be passed as the argument.</param>
+    public static ItemChangerSavedItem Create(
+        string name,
+        string id,
+        BaseGameSavedItem.ItemType type,
+        string? playerDataBoolName = null,
+        Func<UIDef, UIDef>? customUIDef = null)
     {
         BaseGameSavedItem item = new() { Id = id, Type = type };
-        return new() { Name = name, Item = item, PlayerDataBoolName = playerDataBoolName, UIDef = new SavedItemUIDef { Item = item } };
+        UIDef orig = new SavedItemUIDef { Item = item };
+        UIDef uiDef = customUIDef?.Invoke(orig) ?? orig;
+        return new() { Name = name, Item = item, PlayerDataBoolName = playerDataBoolName, UIDef = uiDef };
     }
 
     public static ItemChangerSavedItem CreateWithMsgUIDef(string name, string id, BaseGameSavedItem.ItemType type, string nameSheet, string nameKey, float spriteScale)

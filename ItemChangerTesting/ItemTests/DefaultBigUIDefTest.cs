@@ -118,6 +118,32 @@ internal class DefaultBigUIDefTest : Test
                 Profile.AddPlacement(pmt);
             }
         }
+
+        // Placement for all big uidefs in the item list
+        Placement finderPlacement = upper = new CoordinateLocation()
+        {
+            Name = "FinderPlacement",
+            SceneName = SceneNames.Coral_34,
+            Y = 42.52f,
+            X = 113.49f,
+            FlingType = ItemChanger.Enums.FlingType.Everywhere,
+            ForceDefaultContainer = true,
+            Managed = false,
+        }.Wrap();
+
+        foreach ((string name, Item item) in BaseItemList.GetBaseItems())
+        {
+            if (item.UIDef is not CascadingUIDef) continue;
+
+            finderPlacement.Add(new DebugItem()
+            {
+                Name = $"DEBUG: {name}",
+                UIDef = item.UIDef,
+                Tags = [new PersistentItemTag() { Persistence = ItemChanger.Enums.Persistence.Persistent }]
+            });
+        }
+
+        Profile.AddPlacement(finderPlacement);
     }
 
     private void AddUIDef(Placement pmt, UIDef def)

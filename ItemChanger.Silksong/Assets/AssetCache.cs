@@ -71,6 +71,16 @@ public static class AssetCache
     public static GameObject InstantiateInCurrentScene(this string key)
         => InstantiateAsset(key, UnityEngine.SceneManagement.SceneManager.GetActiveScene());
 
+    /// <summary>
+    /// Retrieves a GameObject prefab by key.
+    /// This method should not be used to instantiate assets; instead,
+    /// <see cref="InstantiateAsset(string, UnityEngine.SceneManagement.Scene)"/> should be used.
+    /// </summary>
+    /// <remarks>
+    /// Typically, this method will be used when extracting data, such as sprites, from the game object.
+    /// </remarks>
+    internal static GameObject GetGameObjectPrefab(this string key)
+        => GetObjectCache<GameObject>().GetAsset(key);
 
     private static void LoadAll()
     {

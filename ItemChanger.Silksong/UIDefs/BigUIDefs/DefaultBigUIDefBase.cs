@@ -6,7 +6,6 @@ using ItemChanger.Silksong.Assets;
 using Silksong.FsmUtil;
 using Silksong.UnityHelper.Extensions;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace ItemChanger.Silksong.UIDefs.BigUIDefs;
 

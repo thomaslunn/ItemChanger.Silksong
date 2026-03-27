@@ -2,5 +2,9 @@
     "ITEM_GET_PROMPT": {
         "AssetName": "Assets/Prefabs/UI/Messages/UI Msg Get Item.prefab",
         "BundleName": "prompts_assets_all"
+    },
+    "ANCESTRAL_ART_GET_PROMPT": {
+        "AssetName": "Assets/Prefabs/UI/Hornet UI/Ancestral_Art_Get_Prompt.prefab",
+        "BundleName": "prompts_assets_all"
     }
 }
