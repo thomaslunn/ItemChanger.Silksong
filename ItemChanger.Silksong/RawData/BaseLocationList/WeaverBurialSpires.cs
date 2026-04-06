@@ -1,6 +1,7 @@
 using Benchwarp.Data;
 using ItemChanger.Locations;
 using ItemChanger.Silksong.Containers;
+using ItemChanger.Silksong.Tags;
 using ItemChanger.Tags;
 
 namespace ItemChanger.Silksong.RawData;
@@ -65,5 +66,12 @@ internal static partial class BaseLocationList
         LocationNames.Silk_Soar,
         SceneNames.Abyss_08,
         spriteObjectPath: "weaver_spire_base control/Burst Deactivate"
+    ).WithTag(
+        new RaiseFsmEventOnGiveTag()
+        {
+            SceneName =  SceneNames.Abyss_08,
+            Event = "SHRINE SEQUENCE END",
+            ObjectPath = "weaver_spire_base control"
+        }
     );
 }
