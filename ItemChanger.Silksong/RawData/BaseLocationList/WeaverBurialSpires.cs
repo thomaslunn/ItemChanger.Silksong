@@ -59,7 +59,8 @@ internal static partial class BaseLocationList
 
     public static Location Clawline => CreateWeaverCorpseLocation(
         LocationNames.Clawline,
-        SceneNames.Under_18
+        SceneNames.Under_18,
+        spriteObjectPath: "Ability Scene/Burst Deactivate/Scenery"
     );
 
     public static Location Silk_Soar => CreateWeaverCorpseLocation(
