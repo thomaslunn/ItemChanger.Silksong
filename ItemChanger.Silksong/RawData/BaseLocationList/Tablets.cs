@@ -31,11 +31,19 @@ internal static partial class BaseLocationList
     };
 
     /*
+     * In _pre, it's (1)
+     * in _caravan, it's (2)
+     * in _festival, it's (3)
+     * in _festival but after the festival has started, it's inaccessible (this should be fixed)
+     * (note that the festival starting is not identical to _festival being loaded)
+     * 
+     * I think this requires extra work to figure out what to do once the festival has started
+     * 
     public static Location Lore_Tablet__Fleatopia_Weaver_Harp => new ObjectLocation()
     {
         Name = LocationNames.Lore_Tablet__Fleatopia_Weaver_Harp,
         SceneName = SceneNames.Aqueduct_05_*,
-        ObjectName = "Caravan_States/Fleatopia/weaver_harp_sign (2)/Inspect Region",
+        ObjectName = "Caravan_States/Fleatopia/weaver_harp_sign (*)/Inspect Region",
         Correction = default,
         Tags = [
             new OriginalContainerTag() { ContainerType = ContainerNames.Tablet, Force = true }
