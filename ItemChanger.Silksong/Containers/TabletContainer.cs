@@ -26,11 +26,14 @@ public class TabletContainer : Container
 
     public override void ModifyContainerInPlace(GameObject obj, ContainerInfo info)
     {
+        BasicNPC npc = obj.GetComponent<BasicNPC>();
+        npc.GiveOnFirstTalk.Clear(); // This is not strictly necessary
+
         obj.AddComponent<ContainerInfoComponent>().info = info;
 
         if (info.GiveInfo.Items.All(x => x.IsObtained()))
         {
-            obj.GetComponent<BasicNPCBase>().Deactivate(false);
+            npc.Deactivate(false);
         }
 
         obj.AddComponent<ItemParticles>().items = info.GiveInfo.Items;
