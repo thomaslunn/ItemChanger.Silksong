@@ -53,5 +53,11 @@ public class WidowLocation : AutoLocation
             preventCameraFadeOut = true,
         });
         
+        // Re-enable inventory access - it is disabled during the Widow death sequence
+        toMemorySceneState.AddAction(new HutongGames.PlayMaker.Actions.SetPlayerDataBool()
+        {
+            boolName = "disableInventory",
+            value = false,
+        });
     }
 }
