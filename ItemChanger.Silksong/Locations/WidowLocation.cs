@@ -27,16 +27,18 @@ public class WidowLocation : AutoLocation
                 action is HutongGames.PlayMaker.Actions.SetPlayerDataBool setPDAction
             && setPDAction.boolName.Value == "hasNeedolin");
         
+        // Instead, grant the item.
+        // Item is granted slightly later, when the screen has faded completely to black
+        // so we can show a big UIDef if necessary
+        FsmState fadeToBlackState = fsm.MustGetState("Fade To Black");
+        fadeToBlackState.AddLambdaMethod(GiveAll);
+        
+        // Remove an unnecessarily long wait time
+        fadeToBlackState.RemoveLastActionOfType<Wait>();
+        
         // Remove the Needolin popup
         FsmState getNeedolinState = fsm.MustGetState("Get Needolin");
         getNeedolinState.RemoveLastActionOfType<SpawnPowerUpGetMsg>();
-        
-        // Instead, grant the item
-        getNeedolinState.AddLambdaMethod(GiveAll);
-        
-        // Remove an unnecessarily long wait time
-        FsmState fadeToBlackState = fsm.MustGetState("Fade To Black");
-        fadeToBlackState.RemoveLastActionOfType<Wait>();
         
         // Avoid going to the memory scene entirely
         // It would be a softlock without movement + Needolin
