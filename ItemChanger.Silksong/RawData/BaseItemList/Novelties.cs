@@ -202,7 +202,8 @@ internal partial class BaseItemList
             {
                 Name = ItemChangerLanguageStrings.INV_NAME_TAUNT,
                 ShopDesc = ItemChangerLanguageStrings.INV_DESC_TAUNT,
-                Sprite = new ICSilksongSprite("Images.taunt_prompt")
+                Sprite = new ICSilksongSprite("Images.taunt_prompt"),
+                SpriteScale = 0.4f
             },
             Sprite = new ICSilksongSprite("Images.taunt_prompt"),
             Data = new()

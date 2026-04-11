@@ -158,6 +158,7 @@ internal class DefaultBigUIDefTest : Test
             Managed = false,
         }
         .Wrap()
+        .WithTag(new ShinyControlTag() { Info = new() { ShinyType = ItemChanger.Silksong.Containers.ShinyContainer.ShinyType.Instant } })
         .Add(Finder.GetItem(ItemNames.Taunt)!.WithTag(new PersistentItemTag() { Persistence = ItemChanger.Enums.Persistence.Persistent }));
 
         Profile.AddPlacement(tempPlacement);
