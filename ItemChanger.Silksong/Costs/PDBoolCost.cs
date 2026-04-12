@@ -26,7 +26,7 @@ namespace ItemChanger.Silksong.Costs
     {
         public IValueProvider<Sprite> Sprite { get; init; } = sprite;
 
-        int IDisplayCost.Amount => CanPay() ? 1 : 0;
+        int IDisplayCost.Amount => 1;
         Sprite IDisplayCost.DisplaySprite => Sprite.Value;
     }
 }
