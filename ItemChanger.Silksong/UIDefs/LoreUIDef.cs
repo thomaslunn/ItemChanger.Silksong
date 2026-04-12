@@ -4,9 +4,9 @@ using ItemChanger.Silksong.Components;
 
 namespace ItemChanger.Silksong.UIDefs;
 
-public class LoreUIDef : CascadingUIDef
+public class LoreUIDef : ControlRelinquishedUIDef
 {
-    public override MessageType RequiredMessageType => MessageType.Dialog;
+    public sealed override MessageType RequiredMessageType => MessageType.Dialog;
 
     public required IValueProvider<string> Text { get; init; }
 

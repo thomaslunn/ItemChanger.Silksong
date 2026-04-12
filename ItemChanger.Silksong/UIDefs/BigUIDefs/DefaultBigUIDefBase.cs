@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace ItemChanger.Silksong.UIDefs.BigUIDefs;
 
-public abstract class DefaultBigUIDefBase : CascadingUIDef
+public abstract class DefaultBigUIDefBase : ControlRelinquishedUIDef
 {
     /// <summary>
     /// The sprite to display.

@@ -4,9 +4,10 @@ using UnityEngine;
 namespace ItemChanger.Silksong.UIDefs;
 
 /// <summary>
-/// UIDef that takes an action if the required message type is satisfied, and falls back to an inner uidef if not.
+/// UIDef that takes an action if the required message type is satisfied and control is currently relinquished,
+/// and falls back to an inner uidef if not.
 /// </summary>
-public abstract class CascadingUIDef : UIDef
+public abstract class ControlRelinquishedUIDef : UIDef
 {
     public abstract MessageType RequiredMessageType { get; }
 
@@ -14,9 +15,14 @@ public abstract class CascadingUIDef : UIDef
 
     public required UIDef Fallback { get; init; }
     
+    protected bool ControlRelinquished()
+    {
+        return InteractManager.BlockingInteractable != null;
+    }
+
     public sealed override void SendMessage(MessageType type, Action? callback = null)
     {
-        if ((type & RequiredMessageType) == RequiredMessageType)
+        if ((type & RequiredMessageType) == RequiredMessageType && ControlRelinquished())
         {
             DoSendMessage(callback);
         }
