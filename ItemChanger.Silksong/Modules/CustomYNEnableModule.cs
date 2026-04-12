@@ -31,7 +31,7 @@ public class CustomYNEnableModule : Module
             return ReturnFlow.None;
         }
 
-        if (owner.Cost is IDisplayCost { DisplayEnabled: true })
+        if (owner.Cost is IDisplayCost)
         {
             return ReturnFlow.None;
         }
@@ -72,7 +72,7 @@ public class CustomYNEnableModule : Module
         List<Cost> nonDisplayableCosts = [];
         foreach (Cost inner in new MultiCost(cost))
         {
-            if (inner is IDisplayCost { DisplayEnabled: true })
+            if (inner is IDisplayCost)
             {
                 displayableCosts.Add(inner);
             }

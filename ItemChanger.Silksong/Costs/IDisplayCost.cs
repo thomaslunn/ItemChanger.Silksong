@@ -7,8 +7,6 @@ namespace ItemChanger.Silksong.Costs;
 /// </summary>
 public interface IDisplayCost
 {
-    bool DisplayEnabled { get; }
-
     Sprite DisplaySprite { get; }
 
     int Amount { get; }

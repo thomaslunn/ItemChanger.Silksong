@@ -28,16 +28,18 @@ public class ItemChangerCostOwner : SavedItem
     // CanPay is effectively equivalent to GetSavedAmount >= the number passed to DialogueYNBox.Open
     public override int GetSavedAmount()
     {
-        if (Cost is IDisplayCost displayCost && displayCost.DisplayEnabled)
+        if (!Cost.CanPay()) return 0;
+
+        if (Cost is IDisplayCost displayCost)
         {
             return displayCost.Amount;
         }
 
-        return Cost.CanPay() ? 1 : 0;
+        return 1;
     }
 
     public override Sprite? GetPopupIcon()
     {
-        return Cost is IDisplayCost displayCost && displayCost.DisplayEnabled ? displayCost.DisplaySprite : null;
+        return Cost is IDisplayCost displayCost ? displayCost.DisplaySprite : null;
     }
 }

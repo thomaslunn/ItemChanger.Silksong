@@ -1,9 +1,11 @@
 ﻿using ItemChanger.Costs;
 using ItemChanger.Silksong.Extensions;
+using ItemChanger.Silksong.RawData;
+using UnityEngine;
 
 namespace ItemChanger.Silksong.Costs;
 
-public class RosaryCost(int amount) : Cost, ICurrencyCost
+public class RosaryCost(int amount) : Cost, ICurrencyCost, IDisplayCost
 {
     public int Amount { get; init; } = amount;
 
@@ -28,4 +30,9 @@ public class RosaryCost(int amount) : Cost, ICurrencyCost
     int ICurrencyCost.Amount => ActualAmount;
 
     CurrencyType ICurrencyCost.CurrencyType => CurrencyType.Money;
+    
+    int IDisplayCost.Amount => ActualAmount;
+
+    Sprite IDisplayCost.DisplaySprite => BaseAtlasSprites.Rosaries.Value;
+
 }

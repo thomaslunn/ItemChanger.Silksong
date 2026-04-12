@@ -1,16 +1,14 @@
 ﻿using ItemChanger.Costs;
 using ItemChanger.Serialization;
 using ItemChanger.Silksong.Serialization;
-using System;
 using UnityEngine;
 
 namespace ItemChanger.Silksong.Costs
 {
-    public class PDBoolCost(string boolName, IValueProvider<string> costText, IValueProvider<Sprite>? sprite = null) : ThresholdBoolCost, IDisplayCost
+    public class PDBoolCost(string boolName, IValueProvider<string> costText) : ThresholdBoolCost
     {
         public string BoolName { get; init; } = boolName;
         public IValueProvider<string> CostText { get; init; } = costText;
-        public IValueProvider<Sprite>? Sprite { get; init; } = sprite;
 
         public override string GetCostText()
         {
@@ -21,9 +19,14 @@ namespace ItemChanger.Silksong.Costs
         {
             return new PDBool(BoolName);
         }
+    }
+
+    public class DisplayablePDBoolCost(string boolName, IValueProvider<string> costText, IValueProvider<Sprite> sprite)
+        : PDBoolCost(boolName, costText), IDisplayCost
+    {
+        public IValueProvider<Sprite> Sprite { get; init; } = sprite;
 
         int IDisplayCost.Amount => CanPay() ? 1 : 0;
-        bool IDisplayCost.DisplayEnabled => Sprite is not null;
-        Sprite IDisplayCost.DisplaySprite => Sprite?.Value ?? new EmptySprite().Value;
+        Sprite IDisplayCost.DisplaySprite => Sprite.Value;
     }
 }
