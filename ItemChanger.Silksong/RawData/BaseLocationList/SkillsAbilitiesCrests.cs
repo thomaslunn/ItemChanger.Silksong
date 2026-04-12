@@ -47,4 +47,10 @@ internal static partial class BaseLocationList
         SceneName = SceneNames.Weave_10,
         Name = LocationNames.Eva,
     };
+
+    public static Location Elegy_of_the_Deep => new ElegyOfTheDeepLocation()
+    {
+        SceneName = SceneNames.Tut_04,
+        Name = LocationNames.Elegy_of_the_Deep,
+    };
 }
