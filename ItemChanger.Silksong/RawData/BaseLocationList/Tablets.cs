@@ -1,8 +1,10 @@
 ﻿using Benchwarp.Data;
 using ItemChanger.Locations;
 using ItemChanger.Silksong.Containers;
+using ItemChanger.Silksong.Locations.MultiLocationEnums;
 using ItemChanger.Silksong.Serialization;
 using ItemChanger.Silksong.Tags;
+using ItemChanger.Silksong.Tags.SpecialLocationTags;
 using ItemChanger.Tags;
 
 namespace ItemChanger.Silksong.RawData;
@@ -37,26 +39,35 @@ internal static partial class BaseLocationList
             ]
     };
 
-    /*
-     * In _pre, it's (1)
-     * in _caravan, it's (2)
-     * in _festival, it's (3)
-     * in _festival but after the festival has started, it's inaccessible (this should be fixed)
-     * (note that the festival starting is not identical to _festival being loaded)
-     * 
-     * I think this requires extra work to figure out what to do once the festival has started
-     * 
-    public static Location Lore_Tablet__Fleatopia_Weaver_Harp => new ObjectLocation()
+    private static Location CreateFleatopiaTabletLocation(string objName, string sceneName)
     {
-        Name = LocationNames.Lore_Tablet__Fleatopia_Weaver_Harp,
-        SceneName = SceneNames.Aqueduct_05_*,
-        ObjectName = "Caravan_States/Fleatopia/weaver_harp_sign (*)/Inspect Region",
-        Correction = default,
-        Tags = [
+        return new ObjectLocation()
+        {
+            Name = LocationNames.Lore_Tablet__Fleatopia_Weaver_Harp,
+            SceneName = sceneName,
+            ObjectName = objName,
+            Correction = default,
+            Tags = [
             new OriginalContainerTag() { ContainerType = ContainerNames.Tablet, Force = true }
             ]
+        };
+    }
+
+    public static Location Lore_Tablet__Fleatopia_Weaver_Harp => new MultiLocation<FleatopiaState>()
+    {
+        Name = LocationNames.Lore_Tablet__Fleatopia_Weaver_Harp,
+        Selector = new FleatopiaStateProvider(),
+        Locations = new Dictionary<FleatopiaState, Location>()
+        {
+            [FleatopiaState.PreCaravan] = CreateFleatopiaTabletLocation(
+                "Caravan_States/Pre_Fleatopia/weaver_harp_sign (1)/Inspect Region", SceneNames.Aqueduct_05_pre),
+            [FleatopiaState.Caravan] = CreateFleatopiaTabletLocation(
+                "Caravan_States/Fleatopia/weaver_harp_sign (2)/Inspect Region", SceneNames.Aqueduct_05_caravan),
+            [FleatopiaState.Festival] = CreateFleatopiaTabletLocation(
+                "Caravan_States/Flea_Festival_Intro/weaver_harp_sign (3)/Inspect Region", SceneNames.Aqueduct_05_festival)
+                    .WithTag(new FleaFestivalTabletTag()),
+        }
     };
-    */
 
     public static Location Lore_Tablet__Memorium_Entrance => new ObjectLocation()
     {

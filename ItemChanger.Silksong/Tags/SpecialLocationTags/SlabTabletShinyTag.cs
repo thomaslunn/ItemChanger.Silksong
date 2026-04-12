@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using Silksong.FsmUtil;
 using UnityEngine;
 
-namespace ItemChanger.Silksong.Tags;
+namespace ItemChanger.Silksong.Tags.SpecialLocationTags;
 
 /// <summary>
 /// Fling a shiny when the first sinner tablet's chains are broken,
