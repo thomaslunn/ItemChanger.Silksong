@@ -1,7 +1,10 @@
 ﻿using ItemChanger.Items;
 using ItemChanger.Serialization;
+using ItemChanger.Silksong.Assets;
 using ItemChanger.Silksong.Serialization;
 using ItemChanger.Silksong.UIDefs;
+using ItemChanger.Silksong.UIDefs.BigUIDefs;
+using UnityEngine.UI;
 
 namespace ItemChanger.Silksong.Items;
 
@@ -59,23 +62,34 @@ public class ItemChangerSavedItem : Item
         return new() { Name = name, Item = item, PlayerDataBoolName = playerDataBoolName, UIDef = uiDef };
     }
 
-    public static ItemChangerSavedItem CreateWithMsgUIDef(string name, string id, BaseGameSavedItem.ItemType type, string nameSheet, string nameKey, float spriteScale)
+    public static ItemChangerSavedItem CreateCrest(string name, string id, string nameKey, string? prefabKey = GameObjectKeys.CREST_GET_PROMPT)
     {
-        BaseGameSavedItem item = new() { Id = id, Type = type };
-        return new() {
+        BaseGameSavedItem item = new() { Id = id, Type = BaseGameSavedItem.ItemType.ToolCrest };
+        UIDef msgFallback = new MsgUIDef
+        {
+            Name = LanguageString.FromItemChanger(nameKey),
+            Sprite = new SavedItemSprite { Item = item },
+            SpriteScale = 1f / 3f,
+        };
+
+        UIDef actualUIDef;
+
+        if (string.IsNullOrEmpty(prefabKey))
+        {
+            actualUIDef = msgFallback;
+        }
+        else
+        {
+            actualUIDef = CrestUIDef.Create(id, msgFallback, prefabKey);
+        }
+
+        return new()
+        {
             Name = name,
             Item = item,
-            UIDef = new MsgUIDef
-            {
-                Name = new LanguageString(nameSheet, nameKey),
-                Sprite = new SavedItemSprite { Item = item },
-                SpriteScale = spriteScale,
-            },
+            UIDef = actualUIDef
         };
     }
-
-    public static ItemChangerSavedItem CreateCrest(string name, string id, string nameKey) =>
-        CreateWithMsgUIDef(name, id, BaseGameSavedItem.ItemType.ToolCrest, $"Mods.{ItemChangerPlugin.Id}", nameKey, 1f / 3);
 
     /* reference implementation for CollectableItem - not fully tested
     

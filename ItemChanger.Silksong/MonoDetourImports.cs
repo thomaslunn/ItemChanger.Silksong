@@ -11,3 +11,5 @@ using TeamCherry.Localization;
 [assembly: MonoDetourTargets(typeof(InteractEvents), GenerateControlFlowVariants = true)]
 [assembly: MonoDetourTargets(typeof(SavedItemDisplay), GenerateControlFlowVariants = true)]
 [assembly: MonoDetourTargets(typeof(CollectableItemPickup), GenerateControlFlowVariants = true)]
+[assembly: MonoDetourTargets(typeof(UIMsgProxy), GenerateControlFlowVariants = true)]
+[assembly: MonoDetourTargets(typeof(ToolCrestUIMsg))]

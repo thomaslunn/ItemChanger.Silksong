@@ -31,7 +31,7 @@ public sealed class CustomYNEnableModule : Module
 
     private ReturnFlow SkipPickupIfNotClicked(CollectableItemPickup self, ref bool breakIfAtMax, ref bool returnValue)
     {
-        YNOptionMarker marker = self.gameObject.GetOrAddComponent<YNOptionMarker>();
+        YNOptionMarker marker = self.gameObject.GetComponent<YNOptionMarker>();
         if (marker != null && !marker.SelectedOption)
         {
             returnValue = false;

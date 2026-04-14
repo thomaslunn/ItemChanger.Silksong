@@ -57,9 +57,7 @@ public abstract class DefaultBigUIDefBase : ControlRelinquishedUIDef
         // Execute the callback when the animation finishes
         ExecuteCallbackOnComplete(fsm, callback);
 
-        // Remove the black background
-        // I don't like doing this, but it's the easiest way to make everything work if the player
-        // takes damage while the popup is showing
+        // Remove the black background when the player takes damage
         HideBackground(fsm);
 
         // For some reason, the Single Prompt object sometimes flashes if this isn't done
@@ -96,7 +94,8 @@ public abstract class DefaultBigUIDefBase : ControlRelinquishedUIDef
 
     protected void HideBackground(PlayMakerFSM fsm)
     {
-        fsm.MustGetState("Top Up").RemoveFirstActionMatching(a => a is SendEventByName sebn && sebn.eventTarget.gameObject.GameObject.Value.name == "BG");
+        fsm.gameObject.AddComponent<RemoveBackboardWhenDamaged>().BackboardName = "BG";
+        // fsm.MustGetState("Top Up").RemoveFirstActionMatching(a => a is SendEventByName sebn && sebn.eventTarget.gameObject.GameObject.Value.name == "BG");
     }
 
     protected void HastenFsm(PlayMakerFSM fsm)

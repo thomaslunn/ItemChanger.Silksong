@@ -1,5 +1,6 @@
 ﻿using ItemChanger.Items;
 using ItemChanger.Serialization;
+using ItemChanger.Silksong.Assets;
 using ItemChanger.Silksong.Items;
 using ItemChanger.Silksong.Serialization;
 using ItemChanger.Silksong.Serialization.SpecialSprites;
@@ -294,7 +295,8 @@ internal static partial class BaseItemList
     public static Item Crest_of_Architect => ItemChangerSavedItem.CreateCrest(
         name: ItemNames.Crest_of_Architect,
         id: "Toolmaster",
-        nameKey: "CREST_ARCHITECT_NAME");
+        nameKey: "CREST_ARCHITECT_NAME",
+        prefabKey: GameObjectKeys.ARCHITECT_CREST_GET_PROMPT);
     public static Item Crest_of_Beast => ItemChangerSavedItem.CreateCrest(
         name: ItemNames.Crest_of_Beast,
         id: "Warrior",
@@ -304,6 +306,7 @@ internal static partial class BaseItemList
         id: "Hunter",
         nameKey: "CREST_HUNTER_NAME")
         .WithTag(new ItemChainTag { Successor = ItemNames.Crest_of_Hunter__Upgrade_1 });
+    
     public static Item Crest_of_Hunter__Upgrade_1 => ItemChangerSavedItem.CreateCrest(
         name: ItemNames.Crest_of_Hunter__Upgrade_1,
         id: "Hunter_v2",
@@ -314,6 +317,7 @@ internal static partial class BaseItemList
         id: "Hunter_v3",
         nameKey: "CREST_HUNTER_V3_NAME")
         .WithTag(new ItemChainTag { Predecessor = ItemNames.Crest_of_Hunter__Upgrade_1 });
+
     public static Item Crest_of_Reaper => ItemChangerSavedItem.CreateCrest(
         name: ItemNames.Crest_of_Reaper,
         id: "Reaper",
@@ -333,11 +337,11 @@ internal static partial class BaseItemList
     public static Item Crest_of_Cursed_Witch => ItemChangerSavedItem.CreateCrest(//not sure to include
         name: ItemNames.Crest_of_Cursed_Witch,
         id: "Cursed",
-        nameKey: "CREST_CURSED_NAME");
+        nameKey: "CREST_CURSED_NAME", prefabKey: null);
     public static Item Crest_of_Cloakless => ItemChangerSavedItem.CreateCrest(//not sure to include
         name: ItemNames.Crest_of_Cloakless,
         id: "Cloakless",
-        nameKey: "CREST_CLOAKLESS_NAME");
+        nameKey: "CREST_CLOAKLESS_NAME", prefabKey: null);
     public static Item Vesticrest_Blue => new PDBoolItem 
     {
         Name = ItemNames.Vesticrest_Blue,
