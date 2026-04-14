@@ -146,29 +146,42 @@ public sealed class CustomYNEnableModule : Module
     /// </param>
     public static void Open(Action? yes, Action? no, Cost cost, string text, bool shouldPay = true)
     {
-        if (shouldPay)
+        void updatedYes()
         {
-            yes = cost.PayIfNotPaid + yes;
+            if (!shouldPay)
+            {
+                yes?.Invoke();
+                return;
+            }
+
+            if (cost.TryToPay())
+            {
+                yes?.Invoke();
+            }
+            else
+            {
+                no?.Invoke();
+            }
         }
         
         if (cost is ICurrencyCost currencyCost)
         {
             int amount = cost.Paid ? 0 : currencyCost.Amount;
-            DialogueYesNoBox.Open(yes, no, true, text, currencyCost.CurrencyType, amount, consumeCurrency: false);
+            DialogueYesNoBox.Open(updatedYes, no, true, text, currencyCost.CurrencyType, amount, consumeCurrency: false);
             return;
         }
 
         List<Cost> costs = [.. (new MultiCost(cost))];
         if (!costs.All(x => x is IDisplayCost))
         {
-            ItemChangerCostProxy costProxy = ItemChangerCostProxy.FromCost(cost);
             if (cost.Paid)
             {
-                DialogueYesNoBox.Open(yes, no, true, text, [], [], displayHudPopup: true, consumeCurrency: false, null);
+                DialogueYesNoBox.Open(updatedYes, no, true, text, [], [], displayHudPopup: true, consumeCurrency: false, null);
             }
             else
             {
-                DialogueYesNoBox.Open(yes, no, true, text, [costProxy], [1], displayHudPopup: true, consumeCurrency: false, null);
+                ItemChangerCostProxy costProxy = ItemChangerCostProxy.FromCost(cost);
+                DialogueYesNoBox.Open(updatedYes, no, true, text, [costProxy], [1], displayHudPopup: true, consumeCurrency: false, null);
             }
             return;
         }
@@ -179,6 +192,6 @@ public sealed class CustomYNEnableModule : Module
         List<ItemChangerCostProxy> displays = unpaidCosts.Select(x => ItemChangerCostProxy.FromCost(x)).ToList();
         List<int> amounts = displayableCosts.Select(x => x.Amount).ToList();
 
-        DialogueYesNoBox.Open(yes, no, true, text, displays, amounts, true, false, null);
+        DialogueYesNoBox.Open(updatedYes, no, true, text, displays, amounts, true, false, null);
     }
 }

@@ -17,9 +17,9 @@ public sealed class YNBoxDamageControlModule : Module
         Using(Md.HeroController.Start.Postfix(SubscribeToDamageEvent));
     }
 
-    // This should never happen
     protected override void DoUnload()
     {
+        // This should never matter unless this module is removed at runtime
         if (HeroController.SilentInstance != null)
         {
             HeroController.SilentInstance.OnTakenDamage -= CloseYNDialogWhenDamaged;

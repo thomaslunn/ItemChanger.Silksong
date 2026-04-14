@@ -57,14 +57,22 @@ internal static class ICExtensions
         => info.Placement.GetUIName(info.PreviewItems, maxLength);
 
     /// <summary>
-    /// Pay the cost if it has not been paid. If it has been paid, this is a no-op.
+    /// Try to pay the given cost.
     /// </summary>
-    public static void PayIfNotPaid(this Cost c)
+    /// <param name="c">The cost.</param>
+    /// <returns>True if the cost was already paid, or is paid successfully by this operation.</returns>
+    public static bool TryToPay(this Cost c)
     {
-        if (!c.Paid)
+        if (c.Paid)
         {
-            c.Pay();
+            return true;
         }
+        if (!c.CanPay())
+        {
+            return false;
+        }
+        c.Pay();
+        return true;
     }
 
     /// <summary>
