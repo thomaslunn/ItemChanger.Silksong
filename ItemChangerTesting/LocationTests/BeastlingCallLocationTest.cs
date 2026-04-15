@@ -2,6 +2,7 @@ using Benchwarp.Data;
 using ItemChanger;
 using ItemChanger.Enums;
 using ItemChanger.Extensions;
+using ItemChanger.Silksong.Modules.FastTravel;
 using ItemChanger.Silksong.RawData;
 using ItemChanger.Tags;
 using UnityEngine.SceneManagement;
@@ -20,7 +21,11 @@ internal class BeastlingCallLocationTest : Test
     
     public override void Setup(TestArgs args)
     {
+        // Add modules
+        Modules.CreateBellwayModules();
+        
         StartNear(SceneNames.Bellway_01, PrimitiveGateNames.left1);
+        
         Profile.AddPlacement(Finder.GetLocation(LocationNames.Beastling_Call)!.Wrap()
             .Add(Finder.GetItem(ItemNames.Surgeon_s_Key)!.WithTag(new PersistentItemTag()
                 { Persistence = Persistence.Persistent })));
@@ -44,6 +49,7 @@ internal class BeastlingCallLocationTest : Test
     {
         base.OnEnterGame();
 
+        
         // Act 3
         PlayerData.instance.blackThreadWorld = true;
         PlayerData.instance.act3_enclaveWakeSceneCompleted = true;
