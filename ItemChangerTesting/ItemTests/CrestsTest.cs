@@ -30,36 +30,24 @@ internal class CrestsTest : Test
 
     public override void Setup(TestArgs args)
     {
-        StartAt(new CoordinateStartDef() { SceneName = SceneNames.Bonetown, X = 60, Y = 7.57f });
+        CommonLocations.StartInBonebottom();
+        // This doesn't fully set the start crest, but it removes the 
+        // Hunter crest so all can be tested
         Profile.Modules.Add(new StartCrestReplacementModule() { ReplacementCrestID = "Warrior" });
 
-        int pos = 60;
-
-        Location GetNewLocation()
-        {
-            pos += 5;
-
-            return new CoordinateLocation()
-            {
-                X = pos,
-                Y = 7.57f,
-                Managed = false,
-                SceneName = SceneNames.Bonetown,
-                Name = $"Bonetown shiny {pos}",
-            };
-        }
+        int i = 0;
 
         foreach ((string name, Item item) in BaseItemList.GetBaseItems())
         {
             if (item.UIDef is not CrestUIDef) continue;
 
-            Location loc = GetNewLocation();
+            Location loc = CommonLocations.GetBonebottomLocation(i++);
             Placement pmt = loc.Wrap().Add(Finder.GetItem(name)!);
             pmt.AddTag(new PlacementItemsHintBoxTag());
             Profile.AddPlacement(pmt);
         }
 
-        Location multiLoc = GetNewLocation().WithTag(new UnsupportedContainerTag() { ContainerType = ContainerNames.Chest });
+        Location multiLoc = CommonLocations.GetBonebottomLocation(i++).WithTag(new UnsupportedContainerTag() { ContainerType = ContainerNames.Chest });
         Placement mpmt = multiLoc.Wrap();
         mpmt.Add(Finder.GetItem(ItemNames.Crest_of_Architect)!);
         mpmt.Add(Finder.GetItem(ItemNames.Crest_of_Beast)!);
@@ -68,20 +56,11 @@ internal class CrestsTest : Test
         mpmt.AddTag(new FixedTextHintBoxTag() { Text = new BoxedString("MultiBigUIDefs") });
         Profile.AddPlacement(mpmt);
 
-        Placement damage = new CoordinateLocation()
-        {
-            Name = "Damage",
-            SceneName = SceneNames.Bone_East_17,
-            Y = 81.57f,
-            X = 62.10f,
-            FlingType = ItemChanger.Enums.FlingType.Everywhere,
-            ForceDefaultContainer = true,
-            Managed = false,
-        }.Wrap();
-        damage.Add(Finder.GetItem(ItemNames.Crest_of_Architect)!);
-        damage.Add(Finder.GetItem(ItemNames.Crest_of_Beast)!);
-        damage.Add(Finder.GetItem(ItemNames.Taunt)!);
-        damage.Add(Finder.GetItem(ItemNames.Crest_of_Hunter)!);
+        Placement damage = CommonLocations.GetDamageLocation().Wrap();
+        damage.Add(Finder.GetItem(ItemNames.Crest_of_Shaman)!);
+        damage.Add(Finder.GetItem(ItemNames.Crest_of_Witch)!);
+        damage.Add(Finder.GetItem(ItemNames.Sylphsong)!);
+        damage.Add(Finder.GetItem(ItemNames.Crest_of_Reaper)!);
         Profile.AddPlacement(damage);
     }
 }

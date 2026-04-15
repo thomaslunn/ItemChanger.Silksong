@@ -26,25 +26,11 @@ internal class YNShinyTest : Test
 
     public override void Setup(TestArgs args)
     {
-        StartAt(new CoordinateStartDef() { SceneName = SceneNames.Bonetown, X = 60, Y = 7.57f });
+        CommonLocations.StartInBonebottom();
 
-        int pos = 60;
+        int i = 0;
 
-        Location GetNewLocation()
-        {
-            pos += 5;
-
-            return new CoordinateLocation()
-            {
-                X = pos,
-                Y = 7.57f,
-                Managed = false,
-                SceneName = SceneNames.Bonetown,
-                Name = $"Bonetown shiny {pos}",
-            };
-        }
-
-        Profile.AddPlacement(GetNewLocation().Wrap().WithDebugItem(persistence: ItemChanger.Enums.Persistence.Persistent));
+        Profile.AddPlacement(CommonLocations.GetBonebottomLocation(i++).Wrap().WithDebugItem(persistence: ItemChanger.Enums.Persistence.Persistent));
 
         Profile.AddPlacement(Finder
             .GetLocation(LocationNames.Lore_Tablet__Bilewater_Above_Groal)!
@@ -64,16 +50,7 @@ internal class YNShinyTest : Test
             );
 
         Profile.AddPlacement(
-            new CoordinateLocation()
-            {
-                Name = "Damage",
-                SceneName = SceneNames.Bone_East_17,
-                Y = 81.57f,
-                X = 62.10f,
-                FlingType = ItemChanger.Enums.FlingType.Everywhere,
-                ForceDefaultContainer = true,
-                Managed = false,
-            }
+            CommonLocations.GetDamageLocation()
             .WithTag(new DefaultCostTag() { Cost = new RosaryCost(1300) })
             .Wrap()
             .Add(new DebugItem()
@@ -86,7 +63,13 @@ internal class YNShinyTest : Test
 
         void TestCost(Cost cost)
         {
-            Profile.AddPlacement(GetNewLocation().WithTag(new DefaultCostTag() { Cost = cost }).Wrap().WithDebugItem(persistence: ItemChanger.Enums.Persistence.Persistent));
+            Profile.AddPlacement(
+                CommonLocations
+                .GetBonebottomLocation(i++)
+                .WithTag(new DefaultCostTag() { Cost = cost })
+                .Wrap()
+                .WithDebugItem(persistence: ItemChanger.Enums.Persistence.Persistent)
+                );
         }
 
         TestCost(new RosaryCost(100));
