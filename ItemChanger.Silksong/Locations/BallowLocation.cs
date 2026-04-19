@@ -19,6 +19,7 @@ public class BallowLocation : AutoLocation
 
     private void HookBallow(PlayMakerFSM fsm)
     {
+        // Always navigate to the dialogue tree which grants the key if the placement has items
         FsmState postFirstDiveState = fsm.MustGetState("Post Ver?");
         postFirstDiveState.InsertMethod(0, () =>
         {
@@ -42,8 +43,9 @@ public class BallowLocation : AutoLocation
             }
         });
 
+        // Replace granting the key with obtaining the placement
         FsmState giveKeyState = fsm.MustGetState("Give Key");
         giveKeyState.RemoveActionsOfType<CollectableItemCollect>();
-        giveKeyState.InsertMethod(3, GiveAll);
+        giveKeyState.InsertLambdaMethod(3, GiveAll);
     }
 }
