@@ -1,12 +1,11 @@
 using HutongGames.PlayMaker;
-using HutongGames.PlayMaker.Actions;
+using ItemChanger.Containers;
 using ItemChanger.Locations;
 using ItemChanger.Silksong.RawData;
-using ItemChanger.Silksong.Serialization;
+using ItemChanger.Tags;
 using Newtonsoft.Json;
 using PrepatcherPlugin;
 using Silksong.FsmUtil;
-using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace ItemChanger.Silksong.Locations;
@@ -15,7 +14,7 @@ namespace ItemChanger.Silksong.Locations;
 // - Benchwarp crash when warping to locked bench
 // - Freeze on save+quit - cannot reproduce?
 
-public class CrawSummonsLocation : AutoLocation
+public class CrawSummonsLocation : ObjectLocation
 {
     /// <summary>
     /// List of all scenes that support Craw Summons
@@ -38,7 +37,7 @@ public class CrawSummonsLocation : AutoLocation
     /// List of scenes that the Craw Summons location should spawn at. Defaults to all possible
     /// vanilla locations simultaneously.
     /// </summary>
-    public required List<string> SceneNames { get; init; } = [..CRAW_SUMMONS_SCENES];
+    public List<string> SceneNames { get; init; } = [..CRAW_SUMMONS_SCENES];
 
     /// <summary>
     /// List of scenes that have the Craw summon pin present. Should be initialized empty.
@@ -49,22 +48,19 @@ public class CrawSummonsLocation : AutoLocation
     protected override void DoLoad()
     {
         FsmEditGroup editGroup = new();
-        foreach (var sceneName in SceneNames)
-        {
-            ItemChangerHost.Singleton.GameEvents.AddSceneEdit(sceneName, PatchCrawSummonsLocation);
-        }
 
-        foreach (var sceneName in CRAW_SUMMONS_SCENES)
+        // Don't call base.DoLoad since SceneName is not specified
+        foreach (var scene in SceneNames)
         {
-            if (SceneNames.Contains(sceneName))
+            if (SceneNames.Contains(scene))
             {
-                editGroup.Add(new FsmId(sceneName, "RestBench", "Bench Control"),
-                    fsm => ForceSummonsSpawn(fsm, sceneName));
-                editGroup.Add(new FsmId(sceneName, "craw_court_summons_pin", "FSM"), FixPinBehaviour);
+                ItemChangerHost.Singleton.GameEvents.AddSceneEdit(scene, base.OnSceneLoaded);
+                ItemChangerHost.Singleton.GameEvents.AddSceneEdit(scene, PatchCrawSummonsAppearedScene);
+                editGroup.Add(new FsmId(scene, "RestBench", "Bench Control"), fsm => ForceSummonsSpawn(fsm, scene));
             }
             else
             {
-                editGroup.Add(new FsmId(sceneName, "RestBench", "Bench Control"), ForceNoSummonsSpawn);
+                editGroup.Add(new FsmId(scene, "RestBench", "Bench Control"), ForceNoSummonsSpawn);
             }
         }
 
@@ -73,34 +69,14 @@ public class CrawSummonsLocation : AutoLocation
 
     protected override void DoUnload()
     {
-        foreach (var sceneName in SceneNames)
+        foreach (var scene in SceneNames)
         {
-            ItemChangerHost.Singleton.GameEvents.RemoveSceneEdit(sceneName, PatchCrawSummonsLocation);
+            ItemChangerHost.Singleton.GameEvents.RemoveSceneEdit(scene, base.OnSceneLoaded);
+            ItemChangerHost.Singleton.GameEvents.RemoveSceneEdit(scene, PatchCrawSummonsAppearedScene);
         }
     }
 
-    private void FixPinBehaviour(PlayMakerFSM fsm)
-    {
-        // Remove the summons cloth from the pin iff the placement is obtained
-        FsmState emptyState = fsm.MustGetState("Empty?");
-        emptyState.Actions = [];
-        emptyState.AddLambdaMethod(_ =>
-        {
-            if (Placement!.AllObtained())
-                fsm.SendEvent("TRUE");
-            else
-                fsm.SendEvent("FINISHED");
-        });
-
-        // Replace the craw summons item
-        FsmState setPickupState = fsm.MustGetState("Set Pickup");
-        PlacementSavedItem icItem = ScriptableObject.CreateInstance<PlacementSavedItem>();
-        icItem.Placement = Placement!;
-        icItem.GiveInfo = GetGiveInfo();
-        setPickupState.GetFirstActionOfType<SetCollectablePickupItem>()!.Item = icItem;
-    }
-
-    private void PatchCrawSummonsLocation(Scene scene)
+    private void PatchCrawSummonsAppearedScene(Scene scene)
     {
         if (ScenesWithSpawnedSummons.Contains(scene.name))
             PlayerDataAccess.CrowSummonsAppearedScene = scene.name;
@@ -110,7 +86,7 @@ public class CrawSummonsLocation : AutoLocation
 
     private void ForceSummonsSpawn(PlayMakerFSM fsm, string sceneName)
     {
-        void CancelIfNoSummonsSpawn(Action cb)
+        void CancelIfRequirementsNotMet(Action cb)
         {
             if (!QuestManager.TryGetFullQuestBase(Quests.Black_Thread_Pt1_Shamans, out var quest))
             {
@@ -130,14 +106,14 @@ public class CrawSummonsLocation : AutoLocation
             cb();
         }
 
-        // Replace RunFsm (craw_summons_spawn_check) states with lambda method
+        // Replace RunFsm (craw_summons_spawn_check) states with equivalent check without any randomness
         FsmState respawnCheck = fsm.MustGetState("Set Custom Wake Up?");
         respawnCheck.RemoveAction(3);
-        respawnCheck.InsertLambdaMethod(3, CancelIfNoSummonsSpawn);
+        respawnCheck.InsertLambdaMethod(3, CancelIfRequirementsNotMet);
 
         FsmState sitCheck = fsm.MustGetState("Craw summons check");
         sitCheck.RemoveAction(3);
-        sitCheck.InsertLambdaMethod(3, CancelIfNoSummonsSpawn);
+        sitCheck.InsertLambdaMethod(3, CancelIfRequirementsNotMet);
     }
 
     private void ForceNoSummonsSpawn(PlayMakerFSM fsm)
@@ -150,5 +126,30 @@ public class CrawSummonsLocation : AutoLocation
         FsmState sitCheck = fsm.MustGetState("Craw summons check");
         sitCheck.RemoveAction(3);
         sitCheck.InsertLambdaMethod(3, _ => fsm.SendEvent("CANCEL"));
+    }
+
+    public override GameObject ReplaceWithContainer(Scene scene, Container container, ContainerInfo info)
+    {
+        // Delay replacing with container until after the pin has landed
+        GameObject target = FindObject(scene, ObjectName);
+        GameObject newContainer = container.GetNewContainer(info);
+        newContainer.SetActive(false);
+
+        PlayMakerFSM fsm = target.LocateMyFSM("FSM");
+        FsmState emptyState = fsm.MustGetState("Empty?");
+        emptyState.Actions = [];
+        emptyState.AddLambdaMethod(_ =>
+        {
+            newContainer.SetActive(true);
+            container.ApplyTargetContext(newContainer, target, Correction);
+            foreach (IActionOnContainerReplaceTag tag in GetTags<IActionOnContainerReplaceTag>())
+            {
+                tag.OnReplace(scene, newContainer);
+            }
+
+            fsm.SendEvent("TRUE");
+        });
+
+        return newContainer;
     }
 }

@@ -18,7 +18,7 @@ internal class CrawSumonsLocationTest : Test
     {
         StartNear(SceneNames.Shellwood_08c, PrimitiveGateNames.left1);
         Profile.AddPlacement(Finder.GetLocation(LocationNames.Craw_Summons)!.Wrap()
-            .Add(Finder.GetItem(ItemNames.Pale_Oil)!));
+            .Add(Finder.GetItem(ItemNames.Flea)!));
     }
 
     protected override void OnEnterGame()
