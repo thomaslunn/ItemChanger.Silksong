@@ -31,21 +31,7 @@ public class SlabKidnappingModule : Module
         ItemChangerHost.Singleton.GameEvents.AddSceneEdit(SceneNames.Shadow_21, ForceJailerBilewater);
         ItemChangerHost.Singleton.GameEvents.AddSceneEdit(SceneNames.Greymoor_05, ForceJailerGreymoor);
 
-        Using(new FsmEditGroup()
-        {
-            {
-                new(SceneNames.Bone_East_04c, "Slab Fly Large Cage", "Control"),
-                fsm => HookWardenfly(fsm, () => PlayerDataAccess.CurseKilledFlyBoneEast)
-            },
-            {
-                new(SceneNames.Shadow_21, "Slab Fly Large Cage", "Control"),
-                fsm => HookWardenfly(fsm, () => PlayerDataAccess.CurseKilledFlySwamp)
-            },
-            {
-                new(SceneNames.Greymoor_05, "Slab Fly Large Cage", "Control"),
-                fsm => HookWardenfly(fsm, () => PlayerDataAccess.CurseKilledFlyGreymoor)
-            },
-        });
+        Using(new FsmEditGroup { { new(SilksongHost.Wildcard, "Slab Fly Large Cage", "Control"), HookWardenfly } });
     }
 
     protected override void DoUnload()
@@ -65,7 +51,7 @@ public class SlabKidnappingModule : Module
             jailerObj.RemoveComponents<DeactivateIfPlayerdataTrue>();
             jailerObj.RemoveComponents<DeactivateIfPlayerdataFalse>();
         }
-        
+
         GameObject sceneControl = scene.FindGameObjectByName("Scene Control")!;
         sceneControl.RemoveComponent<TestGameObjectActivator>();
 
@@ -83,7 +69,7 @@ public class SlabKidnappingModule : Module
             jailerObj.RemoveComponents<DeactivateIfPlayerdataTrue>();
             jailerObj.RemoveComponents<DeactivateIfPlayerdataFalse>();
         }
-        
+
         GameObject sceneControl = scene.FindGameObjectByName("Scene Control")!;
         sceneControl.RemoveComponent<PlayerDataTestResponse>();
 
@@ -108,13 +94,7 @@ public class SlabKidnappingModule : Module
         // Default behaviour: spawn the jailer according to SlabCaptureIsAvailable, except when Moorwing is present.
         FsmState enemySuiteState = fsm.MustGetState("Enemy Suite");
         enemySuiteState.Actions = [];
-        enemySuiteState.AddLambdaMethod(_ =>
-        {
-            if (SlabCaptureIsAvailable.Value)
-                fsm.SendEvent("JAILER");
-            else
-                fsm.SendEvent("NOT JAILER");
-        });
+        enemySuiteState.AddLambdaMethod(_ => fsm.SendEvent(SlabCaptureIsAvailable.Value ? "JAILER" : "NOT JAILER"));
 
         FsmState jailCartState = fsm.MustGetState("Jail Cart?");
         jailCartState.InsertLambdaMethod(0, _ =>
@@ -132,24 +112,20 @@ public class SlabKidnappingModule : Module
         });
     }
 
-    private void HookWardenfly(PlayMakerFSM fsm, Func<bool> isWardenflyDefeatedByCurse)
+    private void HookWardenfly(PlayMakerFSM fsm)
     {
         // Rewire wardenflies spawn logic
         FsmState initState = fsm.MustGetState("Init");
         initState.RemoveTransition("FINISHED");
         initState.AddTransition("HERE", "Dormant");
-        initState.AddTransition("DEAD", "Cursed Dead");
         initState.AddTransition("NOT HERE", "Not Here");
 
-        initState.AddLambdaMethod(_ =>
-        {
-            if (SlabCaptureIsAvailable.Value)
-                fsm.SendEvent("HERE");
-            else if (isWardenflyDefeatedByCurse())
-                fsm.SendEvent("DEAD");
-            else
-                fsm.SendEvent("NOT HERE");
-        });
+        initState.AddLambdaMethod(_ => fsm.SendEvent(SlabCaptureIsAvailable.Value ? "HERE" : "NOT HERE"));
+
+        // Ignore cursed state
+        FsmState curseCheckState = fsm.MustGetState("Is Cursed?");
+        curseCheckState.Actions = [];
+        curseCheckState.AddLambdaMethod(_ => fsm.SendEvent("FALSE"));
 
         // Suppress the usual slab capture function that takes all items.
         FsmState capturedState = fsm.MustGetState("Start Caged Sequence");
