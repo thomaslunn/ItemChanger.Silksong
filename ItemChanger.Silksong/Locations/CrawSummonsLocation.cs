@@ -41,7 +41,22 @@ public class CrawSummonsLocation : ObjectLocation
         PlayMakerFSM fsm = target.LocateMyFSM("FSM");
         FsmState emptyState = fsm.MustGetState("Empty?");
         emptyState.Actions = [];
-        emptyState.AddLambdaMethod(_ =>
+        emptyState.AddMethod(_ =>
+        {
+            PositionNewContainer();
+            fsm.SendEvent("TRUE");
+        });
+        
+        // Additional handling for benchwarp/respawn/save+quit summons spawn - otherwise there's a delay before
+        // replacement occurs while the screen is fading in
+        FsmState appearInBlackState = fsm.MustGetState("Appear In Black");
+        appearInBlackState.InsertMethod(9, _ => PositionNewContainer());
+        appearInBlackState.AddTransition("EMPTY", "Set Empty");
+        appearInBlackState.AddMethod(_ => fsm.SendEvent("EMPTY"));
+
+        return newContainer;
+
+        void PositionNewContainer()
         {
             newContainer.SetActive(true);
             container.ApplyTargetContext(newContainer, target, Correction);
@@ -49,10 +64,6 @@ public class CrawSummonsLocation : ObjectLocation
             {
                 tag.OnReplace(scene, newContainer);
             }
-
-            fsm.SendEvent("TRUE");
-        });
-
-        return newContainer;
+        }
     }
 }
