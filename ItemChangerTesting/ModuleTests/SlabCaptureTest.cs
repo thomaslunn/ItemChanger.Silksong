@@ -25,5 +25,6 @@ internal class SlabCaptureTest : Test
     {
         PlayerDataAccess.hasDash = true;
         PlayerDataAccess.hasBrolly = true;
+        // ToolItemManager.SetEquippedCrest("Cursed");
     }
 }

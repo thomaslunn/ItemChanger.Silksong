@@ -25,6 +25,12 @@ public class SlabKidnappingModule : Module
     /// </summary>
     public IValueProvider<bool> SlabCaptureIsAvailable { get; set; } = new BoxedBool(true);
 
+    /// <summary>
+    /// An <see cref="IValueProvider{T}"/> describing whether Slab Wardens are able to capture Hornet while she is
+    /// cursed. Defaults to constant false.
+    /// </summary>
+    public IValueProvider<bool> SlabCaptureWhileCursed { get; set; } = new BoxedBool(false);
+
     protected override void DoLoad()
     {
         ItemChangerHost.Singleton.GameEvents.AddSceneEdit(SceneNames.Bone_East_04c, ForceJailerDocks);
@@ -118,14 +124,25 @@ public class SlabKidnappingModule : Module
         FsmState initState = fsm.MustGetState("Init");
         initState.RemoveTransition("FINISHED");
         initState.AddTransition("HERE", "Dormant");
+        initState.AddTransition("DEAD", "Cursed Dead");
         initState.AddTransition("NOT HERE", "Not Here");
 
-        initState.AddLambdaMethod(_ => fsm.SendEvent(SlabCaptureIsAvailable.Value ? "HERE" : "NOT HERE"));
-
+        string isWardenDeadVariableName = fsm.GetStringVariable("Cursed Death Bool").Value;
+        
+        initState.AddLambdaMethod(_ =>
+        {
+            if (SlabCaptureIsAvailable.Value)
+                fsm.SendEvent("HERE");
+            else if (PlayerData.instance.GetBool(isWardenDeadVariableName) && !SlabCaptureWhileCursed.Value)
+                fsm.SendEvent("DEAD");
+            else
+                fsm.SendEvent("NOT HERE");
+        });
+        
         // Ignore cursed state
         FsmState curseCheckState = fsm.MustGetState("Is Cursed?");
-        curseCheckState.Actions = [];
-        curseCheckState.AddLambdaMethod(_ => fsm.SendEvent("FALSE"));
+        curseCheckState.GetFirstActionOfType<BoolTest>()!.isTrue = null;
+        curseCheckState.AddMethod(_ => fsm.SendEvent(SlabCaptureWhileCursed.Value ? "FALSE" : "TRUE"));
 
         // Suppress the usual slab capture function that takes all items.
         FsmState capturedState = fsm.MustGetState("Start Caged Sequence");
