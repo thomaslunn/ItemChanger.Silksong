@@ -61,15 +61,8 @@ public class DeterministicCrawSummonsModule : Module
 
         foreach (var scene in AllCrawSummonsScenes)
         {
-            if (SceneNames.Contains(scene))
-            {
-                ItemChangerHost.Singleton.GameEvents.AddSceneEdit(scene, PatchCrawSummonsAppearedScene);
-                editGroup.Add(new FsmId(scene, "RestBench", "Bench Control"), fsm => ForceSummonsSpawn(fsm, scene));
-            }
-            else
-            {
-                editGroup.Add(new FsmId(scene, "RestBench", "Bench Control"), ForceNoSummonsSpawn);
-            }
+            ItemChangerHost.Singleton.GameEvents.AddSceneEdit(scene, PatchCrawSummonsAppearedScene);
+            editGroup.Add(new FsmId(scene, "RestBench", "Bench Control"), fsm => ForceSummonsSpawn(fsm, scene));
         }
 
         Using(editGroup);
@@ -77,7 +70,7 @@ public class DeterministicCrawSummonsModule : Module
 
     protected override void DoUnload()
     {
-        foreach (var scene in SceneNames)
+        foreach (var scene in AllCrawSummonsScenes)
         {
             ItemChangerHost.Singleton.GameEvents.RemoveSceneEdit(scene, PatchCrawSummonsAppearedScene);
         }
@@ -105,6 +98,14 @@ public class DeterministicCrawSummonsModule : Module
 
         void CancelIfRequirementsNotMet(Action cb)
         {
+            if (!SceneNames.Contains(sceneName)
+                || ScenesWithSpawnedSummons.Contains(sceneName)
+                || !SpawnConditions.Value)
+            {
+                fsm.SendEvent("CANCEL");
+                return;
+            }
+
             // When Craw Summons spawns while warping to a locked bell bench using BenchWarp, the screen fills black
             // until moving through a scene transition.
             // This fix prevents the Craw Summons from spawning at a locked bench, which probably makes sense anyway.
@@ -116,26 +117,8 @@ public class DeterministicCrawSummonsModule : Module
                 return;
             }
 
-            if (ScenesWithSpawnedSummons.Contains(sceneName) || !SpawnConditions.Value)
-            {
-                fsm.SendEvent("CANCEL");
-                return;
-            }
-
             ScenesWithSpawnedSummons.Add(sceneName);
             cb();
         }
-    }
-
-    private void ForceNoSummonsSpawn(PlayMakerFSM fsm)
-    {
-        // Replace RunFsm (craw_summons_spawn_check) states with lambda method that always cancels
-        FsmState respawnCheck = fsm.MustGetState("Set Custom Wake Up?");
-        respawnCheck.RemoveAction(3);
-        respawnCheck.InsertLambdaMethod(3, _ => fsm.SendEvent("CANCEL"));
-
-        FsmState sitCheck = fsm.MustGetState("Craw summons check");
-        sitCheck.RemoveAction(3);
-        sitCheck.InsertLambdaMethod(3, _ => fsm.SendEvent("CANCEL"));
     }
 }
