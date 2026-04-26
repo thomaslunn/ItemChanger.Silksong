@@ -1,4 +1,10 @@
-﻿namespace ItemChanger.Silksong.Extensions;
+﻿using ItemChanger.Enums;
+using ItemChanger.Items;
+using ItemChanger.Placements;
+using ItemChanger.Silksong.Placements;
+using UnityEngine;
+
+namespace ItemChanger.Silksong.Extensions;
 
 public static class QuestExtensions
 {
@@ -25,6 +31,29 @@ public static class QuestExtensions
         public void ModifyTargetAmount(int targetIndex, int newTargetAmount)
         {
             self.targets[targetIndex].Count = newTargetAmount;
+        }
+
+        public void ModifyReward(Placement placement)
+        {
+            var savedItem = ScriptableObject.CreateInstance<PlacementSavedItem>();
+            savedItem.Placement = placement;
+            savedItem.GiveInfo = new GiveInfo()
+            {
+                FlingType = FlingType.DirectDeposit,
+                MessageType = MessageType.Any,
+            };
+
+            self.ModifyReward(savedItem);
+        }
+
+        public void ModifyReward(SavedItem reward)
+        {
+            self.rewardCount = 1;
+            self.rewardCountAct3 = 1;
+            self.rewardItem = reward;
+            // Set reward icon to null so that the game fetches the icon from the item
+            self.rewardIcon = null;
+            self.rewardIconType = FullQuestBase.IconTypes.Image;
         }
     }
 }
