@@ -2,6 +2,7 @@
 using ItemChanger.Items;
 using ItemChanger.Placements;
 using ItemChanger.Serialization;
+using ItemChanger.Silksong.RawData;
 
 namespace ItemChanger.Silksong.Extensions;
 
@@ -35,6 +36,13 @@ internal static class ICExtensions
 
 
         return $"{prefix}-{placement.Name}-{itemSuffix}";
+    }
+
+    public static void AddToStart(this ItemChangerProfile profile, Item item)
+    {
+        profile.AddPlacement(
+            ItemChangerHost.Singleton.Finder.GetLocation(LocationNames.Start)!.Wrap().Add(item),
+            Enums.PlacementConflictResolution.MergeKeepingOld);
     }
 }
 
