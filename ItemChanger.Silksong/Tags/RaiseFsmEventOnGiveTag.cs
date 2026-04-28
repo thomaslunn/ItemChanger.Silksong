@@ -27,7 +27,7 @@ public class RaiseFsmEventOnGiveTag : Tag
         Placement? placement = (parent as Location)?.Placement;
         if (placement != null)
         {
-            placement.OnVisitStateChanged += OnVisitStateChanged;
+            placement.OnVisited += OnVisited;
         }
         else
         {
@@ -42,22 +42,11 @@ public class RaiseFsmEventOnGiveTag : Tag
         Placement? placement = (parent as Location)?.Placement;
         if (placement != null)
         {
-            placement.OnVisitStateChanged -= OnVisitStateChanged;
+            placement.OnVisited -= OnVisited;
         }
 
         ItemChangerHost.Singleton.GameEvents.RemoveSceneEdit(SceneName, FindFsm);
         _fsm = null;
-    }
-
-    private void OnVisitStateChanged(VisitStateChangedEventArgs obj)
-    {
-        if (
-            obj.NewFlags.HasFlag(VisitState.ObtainedAnyItem)
-            && !obj.Orig.HasFlag(VisitState.ObtainedAnyItem)
-        )
-        {
-            RaiseEvent();
-        }
     }
 
     private void FindFsm(Scene scene)
@@ -77,8 +66,10 @@ public class RaiseFsmEventOnGiveTag : Tag
         }
     }
 
-    private void RaiseEvent()
+    private void OnVisited(PlacementVisitedEventArgs args)
     {
+        if ((args.ProposedNewFlags & VisitState.ObtainedAnyItem) == 0)
+            return;
         if (_fsm == null)
             return;
         _fsm.SendEvent(Event);
