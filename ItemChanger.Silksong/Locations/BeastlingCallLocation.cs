@@ -31,12 +31,8 @@ public class BeastlingCallLocation : AutoLocation
         FsmState pickupMessageState = fsm.MustGetState("Get Item Msg");
         pickupMessageState.RemoveFirstActionOfType<CreateUIMsgGetItem>();
 
-        // Give placement - given slightly early so that UI popup doesn't get eaten by
-        // the scene transition
-        pickupMessageState.InsertLambdaMethod(3, GiveAll);
-
-        // This event is normally sent when Beastling Call UI is closed
-        pickupMessageState.AddLambdaMethod(_ => { fsm.SendEvent("GET ITEM MSG END"); });
+        // Give placement - given slightly early so that UI popup doesn't get eaten by the scene transition
+        pickupMessageState.InsertMethod(3, _ => GiveAll(() => fsm.SendEvent("GET ITEM MSG END")));
 
         // Remove granting Beastling Call
         FsmState timePassesState = fsm.MustGetState("Time Passes");
